@@ -4,7 +4,8 @@
                     \ \ /\ / / _` | '__| '_ \| | '_ \ / _` |                    
                      \ V  V / (_| | |  | | | | | | | | (_| |                    
                       \_/\_/ \__,_|_|  |_| |_|_|_| |_|\__, |                    
-                                                      |___/                     
+                                                      |___/        
+    	!!!! THIS IS NOT MY LIBRARY !!!!!!!!!! THIS IS NOT MY LIBRARY !!!!
       this example file is missing a lot of stuff and its pretty outdated       
                i recommend using the documentation for Obsidian:                
                         https://docs.mspaint.cc/obsidian                        

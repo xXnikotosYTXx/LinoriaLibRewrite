@@ -3983,12 +3983,13 @@ do
         return Textbox
     end
 
-local TweenService = game:GetService("TweenService")
+
 
 -- ============================================
 -- TOGGLE
 -- ============================================
 function BaseGroupboxFuncs:AddToggle(Idx, Info)
+local TweenService = game:GetService("TweenService")
     assert(Info.Text, string.format("AddToggle (IDX: %s): Missing `Text` string.", tostring(Idx)))
 
     local Toggle = {

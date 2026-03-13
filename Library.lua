@@ -8437,11 +8437,7 @@ end
             })
 
             Library:AddToRegistry(TopAccent, { BackgroundColor3 = 'AccentColor' })
-
-            Library:Create('UICorner', {
-                CornerRadius = UDim.new(0, 4);
-                Parent = TopAccent;
-            })
+            Library:Create('UICorner', { CornerRadius = UDim.new(0, 4); Parent = TopAccent })
 
             Library:AddToRegistry(Library:Create('UIGradient', {
                 Color = ColorSequence.new({
@@ -8490,10 +8486,11 @@ end
                 Parent = HeaderSection;
             })
 
+            -- ContentSection начинается сразу после заголовка (2 + 28 = 30)
             local ContentSection = Library:Create('Frame', {
                 BackgroundTransparency = 1;
                 Position = UDim2.new(0, 0, 0, 30);
-                Size = UDim2.new(1, 0, 1, -30);
+                Size = UDim2.new(1, 0, 0, 100);
                 ClipsDescendants = true;
                 ZIndex = 4;
                 Parent = BoxOuter;
@@ -8526,6 +8523,7 @@ end
             local ScrollBarThumb = Library:Create('Frame', {
                 BackgroundColor3 = Library.AccentColor;
                 BorderSizePixel = 0;
+                Position = UDim2.new(0, 0, 0, 0);
                 Size = UDim2.new(1, 0, 0, 50);
                 ZIndex = 11;
                 Parent = ScrollBarTrack;
@@ -8539,7 +8537,10 @@ end
                 if isUpdatingScrollBar then return end
                 isUpdatingScrollBar = true
                 pcall(function()
-                    if not ScrollFrame or not ScrollFrame.Parent then isUpdatingScrollBar = false; return end
+                    if not ScrollFrame or not ScrollFrame.Parent then
+                        isUpdatingScrollBar = false
+                        return
+                    end
                     local canvasSize = ScrollFrame.CanvasSize.Y.Offset
                     local frameSize = ScrollFrame.AbsoluteSize.Y
                     if canvasSize > frameSize + 10 then
@@ -8564,8 +8565,8 @@ end
 
             local Container = Library:Create('Frame', {
                 BackgroundTransparency = 1;
-                Position = UDim2.new(0, 8, 0, 4);
-                Size = UDim2.new(1, -16, 1, 0);
+                Position = UDim2.new(0, 4, 0, 4);
+                Size = UDim2.new(1, -8, 1, 0);
                 ClipsDescendants = false;
                 ZIndex = 6;
                 Parent = ScrollFrame;
@@ -8622,11 +8623,11 @@ end
                 local MaxHeight = 450
                 local ActualHeight = math.min(math.max(Size, 40), MaxHeight)
 
-                BoxOuter.Size = UDim2.new(1, 0, 0, (20 * DPIScale + ActualHeight) + 2 + 2)
+                -- 30 = высота заголовка, 8 = отступ снизу
+                BoxOuter.Size = UDim2.new(1, 0, 0, 30 + ActualHeight + 8)
                 ContentSection.Size = UDim2.new(1, 0, 0, ActualHeight + 8)
                 ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, Size + 8)
 
-                task.wait(0.05)
                 UpdateScrollBar()
             end
 
@@ -8807,10 +8808,11 @@ end
                     Parent = Button;
                 })
 
+                -- Container таба начинается после заголовка (2 + 28 + 1 divider = 31)
                 local Container = Library:Create('Frame', {
                     BackgroundTransparency = 1;
-                    Position = UDim2.new(0, 8, 0, 35);
-                    Size = UDim2.new(1, -16, 1, -35);
+                    Position = UDim2.new(0, 4, 0, 35);
+                    Size = UDim2.new(1, -8, 1, -35);
                     ZIndex = 1;
                     Visible = false;
                     Parent = BoxOuter;
@@ -8901,7 +8903,8 @@ end
                         Size = Size + (4 * (ElementCount - 1))
                     end
 
-                    BoxOuter.Size = UDim2.new(1, 0, 0, (20 * DPIScale + math.max(Size, 40)) + 2 + 2)
+                    -- 35 = заголовок + кнопки + divider, 8 = отступ снизу
+                    BoxOuter.Size = UDim2.new(1, 0, 0, 35 + math.max(Size, 40) + 8)
                 end
 
                 Button.InputBegan:Connect(function(Input)
@@ -8966,6 +8969,7 @@ end
     local TransparencyCache = {}
     local Toggled = false
     local Fading = false
+
 
     
     function Library:Toggle(Toggling)

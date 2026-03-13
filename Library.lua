@@ -229,68 +229,71 @@ local Library = {
     Registry = {};
     RegistryMap = {};
     HudRegistry = {};
-
     -- colors and font --
     FontColor = Color3.fromRGB(255, 255, 255);
     MainColor = Color3.fromRGB(28, 28, 28);
     BackgroundColor = Color3.fromRGB(20, 20, 20);
-
     AccentColor = Color3.fromRGB(0, 85, 255);
     DisabledAccentColor = Color3.fromRGB(142, 142, 142);
-
     OutlineColor = Color3.fromRGB(50, 50, 50);
     DisabledOutlineColor = Color3.fromRGB(70, 70, 70);
-
     DisabledTextColor = Color3.fromRGB(142, 142, 142);
-
     RiskColor = Color3.fromRGB(255, 50, 50);
-
     Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.Code,
-
+    Font = Enum.Font.Code;
+    -- watermark colors --
+    WatermarkProjectColor = Color3.fromRGB(180, 100, 220);
+    WatermarkNicknameColor = Color3.fromRGB(192, 192, 192);
+    WatermarkFPSColor = Color3.fromRGB(100, 255, 100);
+    WatermarkFPSTextColor = Color3.fromRGB(140, 140, 140);
+    WatermarkPingGoodColor = Color3.fromRGB(100, 255, 100);
+    WatermarkPingMediumColor = Color3.fromRGB(255, 255, 100);
+    WatermarkPingBadColor = Color3.fromRGB(255, 100, 100);
+    WatermarkPingTextColor = Color3.fromRGB(140, 140, 140);
+    WatermarkTimeColor = Color3.fromRGB(120, 120, 120);
+    WatermarkSeparatorColor = Color3.fromRGB(100, 100, 100);
+    WatermarkIconColor = Color3.fromRGB(255, 120, 200);
+    -- keybind colors --
+    KeybindHeaderColor = Color3.fromRGB(200, 200, 200);
+    KeybindIconColor = Color3.fromRGB(150, 150, 255);
+    KeybindNameColor = Color3.fromRGB(180, 180, 180);
+    KeybindKeyColor = Color3.fromRGB(120, 120, 130);
+    KeybindStateOnColor = Color3.fromRGB(100, 255, 100);
+    KeybindStateOffColor = Color3.fromRGB(255, 100, 100);
+    KeybindSeparatorColor = Color3.fromRGB(100, 100, 100);
     -- frames --
     OpenedFrames = {};
     DependencyBoxes = {};
     DependencyGroupboxes = {};
-
     -- signals --
     UnloadSignals = {};
     Signals = {};
-
     -- gui --
     ActiveTab = nil;
     TotalTabs = 0;
-
     ScreenGui = ScreenGui;
     KeybindFrame = nil;
     KeybindContainer = nil;
     Window = { Holder = nil; Tabs = {}; };
-
     -- variables --
     VideoLink = "";
-    
     Toggled = false;
     ToggleKeybind = nil;
-
     IsMobile = false;
     DevicePlatform = Enum.Platform.None;
-
     CanDrag = true;
     CantDragForced = false;
-
     Unloaded = false;
-
+    _ColorUpdateInProgress = false;
     -- notification --
     Notify = nil;
     NotifySide = "Left";
     ShowCustomCursor = true;
     ShowToggleFrameInKeybinds = true;
-    NotifyOnError = false; -- true = Library:Notify for SafeCallback (still warns in the developer console)
-
+    NotifyOnError = false;
     -- addons --
     SaveManager = nil;
     ThemeManager = nil;
-
     -- for better usage --
     Toggles = Toggles;
     Options = Options;
@@ -298,14 +301,13 @@ local Library = {
     Buttons = Buttons;
     Dialogues = Dialogues;
     ActiveDialog = nil;
-
     ImageManager = CustomImageManager;
 }
 
 if RunService:IsStudio() then
-   Library.IsMobile = InputService.TouchEnabled and not InputService.MouseEnabled 
+    Library.IsMobile = InputService.TouchEnabled and not InputService.MouseEnabled
 else
-    pcall(function() Library.DevicePlatform = InputService:GetPlatform() end) -- For safety so the UI library doesn't error.
+    pcall(function() Library.DevicePlatform = InputService:GetPlatform() end)
     Library.IsMobile = (Library.DevicePlatform == Enum.Platform.Android or Library.DevicePlatform == Enum.Platform.IOS)
 end
 
@@ -327,6 +329,82 @@ local function GetTableSize(t)
     end
     return n
 end
+
+-- watermark color setters --
+function Library:SetWatermarkProjectColor(color)
+    if self._ColorUpdateInProgress then return end
+    self._ColorUpdateInProgress = true
+    self.WatermarkProjectColor = color
+    pcall(function()
+        if self.WaveSystem and self.WaveSystem.ProjectLetters then
+            for _, letter in pairs(self.WaveSystem.ProjectLetters) do
+                if letter and letter.Label and letter.Label.Parent then
+                    letter.Label.TextColor3 = color
+                end
+            end
+        end
+    end)
+    task.wait()
+    self._ColorUpdateInProgress = false
+end
+
+function Library:SetWatermarkNicknameColor(color)
+    if self._ColorUpdateInProgress then return end
+    self._ColorUpdateInProgress = true
+    self.WatermarkNicknameColor = color
+    pcall(function()
+        if self.WaveSystem and self.WaveSystem.NicknameLetters then
+            for _, letter in pairs(self.WaveSystem.NicknameLetters) do
+                if letter and letter.Label and letter.Label.Parent then
+                    letter.Label.TextColor3 = color
+                end
+            end
+        end
+    end)
+    task.wait()
+    self._ColorUpdateInProgress = false
+end
+
+function Library:SetWatermarkTimeColor(color)
+    if self._ColorUpdateInProgress then return end
+    self._ColorUpdateInProgress = true
+    self.WatermarkTimeColor = color
+    pcall(function()
+        if self.WaveSystem and self.WaveSystem.TimeLetters then
+            for _, letter in pairs(self.WaveSystem.TimeLetters) do
+                if letter and letter.Label and letter.Label.Parent then
+                    letter.Label.TextColor3 = color
+                end
+            end
+        end
+    end)
+    task.wait()
+    self._ColorUpdateInProgress = false
+end
+
+function Library:SetWatermarkIconColor(color)
+    if self._ColorUpdateInProgress then return end
+    self._ColorUpdateInProgress = true
+    self.WatermarkIconColor = color
+    pcall(function()
+        if self.WaveSystem and self.WaveSystem.IconLabel and self.WaveSystem.IconLabel.Parent then
+            self.WaveSystem.IconLabel.TextColor3 = color
+        end
+    end)
+    task.wait()
+    self._ColorUpdateInProgress = false
+end
+
+function Library:GetPingColor(ping)
+    if ping < 100 then
+        return self.WatermarkPingGoodColor
+    elseif ping < 200 then
+        return self.WatermarkPingMediumColor
+    else
+        return self.WatermarkPingBadColor
+    end
+end
+
 
 local function GetPlayers(ExcludeLocalPlayer, ReturnInstances)
     local PlayerList = Players:GetPlayers()

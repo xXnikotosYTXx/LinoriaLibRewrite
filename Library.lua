@@ -3988,7 +3988,7 @@ local TweenService = game:GetService("TweenService")
 -- ============================================
 -- TOGGLE
 -- ============================================
-function Funcs:AddToggle(Idx, Info)
+function BaseGroupboxFuncs:AddToggle(Idx, Info)
     assert(Info.Text, string.format("AddToggle (IDX: %s): Missing `Text` string.", tostring(Idx)))
 
     local Toggle = {
@@ -4251,7 +4251,7 @@ end
 -- ============================================
 -- SLIDER
 -- ============================================
-function Funcs:AddSlider(Idx, Info)
+function BaseGroupboxFuncs:AddSlider(Idx, Info)
     assert(Info.Default,  string.format("AddSlider (IDX: %s): Missing default value.",   tostring(Idx)))
     assert(Info.Text,     string.format("AddSlider (IDX: %s): Missing slider text.",     tostring(Idx)))
     assert(Info.Min,      string.format("AddSlider (IDX: %s): Missing minimum value.",   tostring(Idx)))

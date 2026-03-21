@@ -747,93 +747,87 @@ function Library:MakeDraggableUsingParent(Instance, Parent, Cutoff, IsMainWindow
 end
 
 function Library:MakeResizable(Instance, MinSize)
-    if Library.IsMobile then
-        return
-    end
+    if Library.IsMobile then return end
 
     Instance.Active = true
-    
     local ResizerImage_Size = 25 * DPIScale
     local ResizerImage_HoverTransparency = 0.5
+    MinSize = MinSize or Library.MinSize
 
+    -- Контейнер для кнопки изменения размера (нижний правый угол)
     local Resizer = Library:Create("Frame", {
-        SizeConstraint = Enum.SizeConstraint.RelativeXX;
-        BackgroundColor3 = Color3.new(0, 0, 0);
+        Size = UDim2.fromOffset(ResizerImage_Size, ResizerImage_Size);
+        Position = UDim2.new(1, -ResizerImage_Size, 1, -ResizerImage_Size);
         BackgroundTransparency = 1;
-        BorderSizePixel = 0;
-        Size = UDim2.new(0, 30, 0, 30);
-        Position = UDim2.new(1, -30, 1, -30);
-        Visible = true;
-        ClipsDescendants = true;
-        ZIndex = 1;
-        Parent = Instance;--Library.ScreenGui;
+        ZIndex = 100;
+        Parent = Instance;
     })
 
+    -- Кнопка с визуальным эффектом
     local ResizerImage = Library:Create("ImageButton", {
         BackgroundColor3 = Library.AccentColor;
         BackgroundTransparency = 1;
-        BorderSizePixel = 0;
-        Size = UDim2.new(2, 0, 2, 0);
-        Position = UDim2.new(1, -30, 1, -30);
-        ZIndex = 2;
+        Size = UDim2.new(1, 0, 1, 0);
+        ZIndex = 101;
         Parent = Resizer;
     })
 
-    local ResizerImageUICorner = Library:Create("UICorner", {
-        CornerRadius = UDim.new(0.5, 0);
-        Parent = ResizerImage;
-    })
-
+    Library:Create("UICorner", { CornerRadius = UDim.new(0.5, 0); Parent = ResizerImage; })
     Library:AddToRegistry(ResizerImage, { BackgroundColor3 = "AccentColor"; })
 
-    Resizer.Size = UDim2.fromOffset(ResizerImage_Size, ResizerImage_Size)
-    Resizer.Position = UDim2.new(1, -ResizerImage_Size, 1, -ResizerImage_Size)
-    MinSize = MinSize or Library.MinSize
+    local Dragging = false
+    local DragStart, StartSize
 
-    local OffsetPos
-    Resizer.Parent = Instance
+    -- Улучшенная логика перетаскивания
+    local function StartDragging(input)
+        Dragging = true
+        DragStart = Vector2.new(input.Position.X, input.Position.Y)
+        StartSize = Instance.AbsoluteSize
+        ResizerImage.BackgroundTransparency = ResizerImage_HoverTransparency
 
-    local function FinishResize(Transparency)
-        ResizerImage.Position = UDim2.new()
-        ResizerImage.Size = UDim2.new(2, 0, 2, 0)
-        ResizerImage.Parent = Resizer
-        ResizerImage.BackgroundTransparency = Transparency
-        ResizerImageUICorner.Parent = ResizerImage
-        OffsetPos = nil
+        local MoveConn, EndConn
+        
+        -- Глобальное отслеживание мыши через сервис ввода
+        MoveConn = game:GetService("UserInputService").InputChanged:Connect(function(moveInput)
+            if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+                local MousePos = Vector2.new(moveInput.Position.X, moveInput.Position.Y)
+                local Delta = MousePos - DragStart
+                
+                -- Применение нового размера с учетом минимальных ограничений
+                Instance.Size = UDim2.fromOffset(
+                    math.max(MinSize.X, StartSize.X + Delta.X),
+                    math.max(MinSize.Y, StartSize.Y + Delta.Y)
+                )
+            end
+        end)
+
+        -- Остановка при отпускании кнопки мыши
+        EndConn = game:GetService("UserInputService").InputEnded:Connect(function(endInput)
+            if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                Dragging = false
+                MoveConn:Disconnect()
+                EndConn:Disconnect()
+                ResizerImage.BackgroundTransparency = 1
+            end
+        end)
     end
 
-    ResizerImage.MouseButton1Down:Connect(function()
-        if not OffsetPos then
-            OffsetPos = Vector2.new(Mouse.X - (Instance.AbsolutePosition.X + Instance.AbsoluteSize.X), Mouse.Y - (Instance.AbsolutePosition.Y + Instance.AbsoluteSize.Y))
-
-            ResizerImage.BackgroundTransparency = 1
-            ResizerImage.Size = UDim2.fromOffset(Library.ScreenGui.AbsoluteSize.X, Library.ScreenGui.AbsoluteSize.Y)
-            ResizerImage.Position = UDim2.new()
-            ResizerImageUICorner.Parent = nil
-            ResizerImage.Parent = Library.ScreenGui
+    ResizerImage.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then 
+            StartDragging(input) 
         end
     end)
-
-    ResizerImage.MouseMoved:Connect(function()
-        if OffsetPos then		
-            local MousePos = Vector2.new(Mouse.X - OffsetPos.X, Mouse.Y - OffsetPos.Y)
-            local FinalSize = Vector2.new(math.clamp(MousePos.X - Instance.AbsolutePosition.X, MinSize.X, math.huge), math.clamp(MousePos.Y - Instance.AbsolutePosition.Y, MinSize.Y, math.huge))
-            Instance.Size = UDim2.fromOffset(FinalSize.X, FinalSize.Y)
-        end
-    end)
-
+    
+    -- Ховер-эффекты
     ResizerImage.MouseEnter:Connect(function()
-        FinishResize(ResizerImage_HoverTransparency)
+        if not Dragging then ResizerImage.BackgroundTransparency = ResizerImage_HoverTransparency end
     end)
 
     ResizerImage.MouseLeave:Connect(function()
-        FinishResize(1)
-    end)
-
-    ResizerImage.MouseButton1Up:Connect(function()
-        FinishResize(ResizerImage_HoverTransparency)
+        if not Dragging then ResizerImage.BackgroundTransparency = 1 end
     end)
 end
+
 
 function Library:AddToolTip(InfoStr, DisabledInfoStr, HoverInstance)
     InfoStr = typeof(InfoStr) == "string" and InfoStr or nil

@@ -7447,7 +7447,7 @@ function Library:CreateWindow(...)
         repeat
             ViewportSize = workspace.CurrentCamera.ViewportSize
             task.wait()
-        until ViewportSize.X > 5 and ViewportSize.Y > 5
+        until ViewportSize.X > 10 and ViewportSize.Y > 5
     end
 
     if WindowInfo.Size == UDim2.fromOffset(0, 0) then

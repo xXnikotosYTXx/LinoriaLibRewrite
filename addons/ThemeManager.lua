@@ -1,3 +1,4 @@
+-- added MORE themes
 local cloneref = (cloneref or clonereference or function(instance: any)
     return instance
 end)
@@ -54,14 +55,20 @@ local ThemeManager = {} do
 
 	ThemeManager.Library = nil
 	ThemeManager.BuiltInThemes = {
-		['Default']       = { 1, { FontColor = "ffffff", MainColor = "1c1c1c", AccentColor = "0055ff", BackgroundColor = "141414", OutlineColor = "323232" } },
-    ['Onetap']        = { 1, { FontColor = "ffffff", MainColor = "1c1c1c", AccentColor = "f1c232", BackgroundColor = "141414", OutlineColor = "323232" } },
+		['Skeet'] 		  = { 1, { FontColor = "ffffff", MainColor = "111111", AccentColor = "3ba1ff", BackgroundColor = "0c0c0c", OutlineColor = "222222" } },
+		['Linoria']       = { 1, { FontColor = "ffffff", MainColor = "1c1c1c", AccentColor = "0055ff", BackgroundColor = "141414", OutlineColor = "323232" } },
 		['BBot']          = { 2, { FontColor = "ffffff", MainColor = "1e1e1e", AccentColor = "7e48a3", BackgroundColor = "232323", OutlineColor = "141414" } },
+		['Vape']          = { 1, { FontColor = "ffffff", MainColor = "1b1b1b", AccentColor = "25c5e6", BackgroundColor = "141414", OutlineColor = "2b2b2b" } },
+		['Matrix'] 		  = { 1, { FontColor = "00ff00", MainColor = "000000", AccentColor = "00ff00", BackgroundColor = "000000", OutlineColor = "003300" } },
+		['Windows XP']    = { 1, { FontColor = "000000", MainColor = "ece9d8", AccentColor = "3db43d", BackgroundColor = "316ac5", OutlineColor = "aca899" } },
+		['Cyberpunk']     = { 1, { FontColor = "fcee0a", MainColor = "000000", AccentColor = "fcee0a", BackgroundColor = "101010", OutlineColor = "fcee0a" } },
+		['Discord']       = { 1, { FontColor = "ffffff", MainColor = "36393f", AccentColor = "5865f2", BackgroundColor = "2f3136", OutlineColor = "202225" } },
 		['Fatality']      = { 3, { FontColor = "ffffff", MainColor = "1e1842", AccentColor = "c50754", BackgroundColor = "191335", OutlineColor = "3c355d" } },
 		['Jester']        = { 4, { FontColor = "ffffff", MainColor = "242424", AccentColor = "db4467", BackgroundColor = "1c1c1c", OutlineColor = "373737" } },
 		['Mint']          = { 5, { FontColor = "ffffff", MainColor = "242424", AccentColor = "3db488", BackgroundColor = "1c1c1c", OutlineColor = "373737" } },
 		['Tokyo Night']   = { 6, { FontColor = "ffffff", MainColor = "191925", AccentColor = "6759b3", BackgroundColor = "16161f", OutlineColor = "323232" } },
 		['Ubuntu']        = { 7, { FontColor = "ffffff", MainColor = "3e3e3e", AccentColor = "e2581e", BackgroundColor = "323232", OutlineColor = "191919" } },
+		['Onetap'] 		  = { 1, { FontColor = "ffffff", MainColor = "242424", AccentColor = "ffae42", BackgroundColor = "1a1a1a", OutlineColor = "3c3c3c" } },
 		['Quartz']        = { 8, { FontColor = "ffffff", MainColor = "232330", AccentColor = "426e87", BackgroundColor = "1d1b26", OutlineColor = "27232f" } },
 	}
 
@@ -214,7 +221,7 @@ local ThemeManager = {} do
 	end
 
 	function ThemeManager:LoadDefault()
-		local theme = 'Default'
+		local theme = 'Linoria'
 		local content = isfile(self.Folder .. '/themes/default.txt') and readfile(self.Folder .. '/themes/default.txt')
 
 		local isDefault = true

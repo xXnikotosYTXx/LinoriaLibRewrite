@@ -12,7 +12,7 @@ local TweenService: TweenService = cloneref(game:GetService("TweenService"))
 local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait()
 local Mouse = cloneref(LocalPlayer:GetMouse())
 
-local DrawingLib = { drawing_replaced = true, new = function(...) error("Drawing is not supported.") end }
+local DrawingLib = { drawing_replaced = true, new = function(...) error("ERROR: Drawing is not supported.") end }
 local IsBadDrawingLib = false
 
 if typeof(getgenv) == "function" and typeof(getgenv().Drawing) == "table" then
@@ -90,12 +90,12 @@ local Tooltips = {}
 local Dialogues = {}
 
 -- https://github.com/deividcomsono/Obsidian/blob/main/Library.lua#L30
-local BaseURL = "https://raw.githubusercontent.com/aidarkunakbaev2/LinoriaLibRewrite/refs/heads/main/"
+local BaseURL = "https://raw.githubusercontent.com/mstudio45/LinoriaLib/refs/heads/main/"
 local CustomImageManager = {}
 local CustomImageManagerAssets = {
     Cursor = {
         RobloxId = 9619665977,
-        Path = "LinoriaLibRewrite/assets/Cursor.png",
+        Path = "LinoriaLib/assets/Cursor.png",
         URL = BaseURL .. "assets/Cursor.png",
 
         Id = nil,
@@ -103,7 +103,7 @@ local CustomImageManagerAssets = {
 
     DropdownArrow = {
         RobloxId = 6282522798,
-        Path = "LinoriaLibRewrite/assets/DropdownArrow.png",
+        Path = "LinoriaLib/assets/DropdownArrow.png",
         URL = BaseURL .. "assets/DropdownArrow.png",
 
         Id = nil,
@@ -111,7 +111,7 @@ local CustomImageManagerAssets = {
 
     Checker = {
         RobloxId = 12977615774,
-        Path = "LinoriaLibRewrite/assets/Checker.png",
+        Path = "LinoriaLib/assets/Checker.png",
         URL = BaseURL .. "assets/Checker.png",
 
         Id = nil,
@@ -119,7 +119,7 @@ local CustomImageManagerAssets = {
 
     CheckerLong = {
         RobloxId = 12978095818,
-        Path = "LinoriaLibRewrite/assets/CheckerLong.png",
+        Path = "LinoriaLib/assets/CheckerLong.png",
         URL = BaseURL .. "assets/CheckerLong.png",
 
         Id = nil,
@@ -127,7 +127,7 @@ local CustomImageManagerAssets = {
 
     SaturationMap = {
         RobloxId = 4155801252,
-        Path = "LinoriaLibRewrite/assets/SaturationMap.png",
+        Path = "LinoriaLib/assets/SaturationMap.png",
         URL = BaseURL .. "assets/SaturationMap.png",
 
         Id = nil,
@@ -300,6 +300,7 @@ local Library = {
     ActiveDialog = nil;
 
     ImageManager = CustomImageManager;
+    ShowCursorBinding = string.sub(tostring({}), 10);
 }
 
 if RunService:IsStudio() then
@@ -2599,6 +2600,7 @@ do
 
         Info.Searchable = if typeof(Info.Searchable) == "boolean" then Info.Searchable else false
         Info.FormatDisplayValue = if typeof(Info.FormatDisplayValue) == "function" then Info.FormatDisplayValue else nil
+        Info.FormatListValue = if typeof(Info.FormatListValue) == "function" then Info.FormatListValue else nil
 
         local Dropdown = {
             Values = Info.Values;
@@ -2814,10 +2816,8 @@ do
 
             if Info.Multi and typeof(SelectedValue) == "table" then
                 for Idx, Value in next, Dropdown.Values do
-                    local StringValue = if typeof(Value) == "Instance" then Value.Name else Value
-
                     if SelectedValue[Value] then
-                        Str = Str .. (Info.FormatDisplayValue and tostring(Info.FormatDisplayValue(StringValue)) or StringValue) .. ", "
+                        Str = Str .. tostring(Info.FormatDisplayValue and Info.FormatDisplayValue(Value) or Value) .. ", "
                     end
                 end
 
@@ -2828,8 +2828,7 @@ do
                     return "--"
                 end
 
-                local StringValue = if typeof(SelectedValue) == "Instance" then SelectedValue.Name else tostring(SelectedValue)
-                Str = Info.FormatDisplayValue and tostring(Info.FormatDisplayValue(StringValue)) or StringValue
+                Str = tostring(Info.FormatDisplayValue and Info.FormatDisplayValue(SelectedValue) or SelectedValue)
             end
 
             return Str
@@ -2872,7 +2871,7 @@ do
             OpenedXSizeForList = DropdownOuter.AbsoluteSize.X + 0.5
 
             for Idx, Value in next, Values do
-                local StringValue = if typeof(Value) == "Instance" then Value.Name else Value
+                local StringValue = tostring(Info.FormatListValue and Info.FormatListValue(Value) or Value)
                 if Info.Searchable and not string.lower(StringValue):match(string.lower(DropdownInnerSearch.Text)) then
                     continue
                 end
@@ -3046,8 +3045,9 @@ do
             Dropdown.Visible = Visibility
 
             DropdownOuter.Visible = Dropdown.Visible
-            if not Dropdown.Visible then Dropdown:CloseDropdown()
-end
+            if not Dropdown.Visible then 
+                Dropdown:CloseDropdown()
+            end
         end
 
         function Dropdown:SetDisabled(Disabled)
@@ -4591,6 +4591,7 @@ do
         
         Info.Searchable = if typeof(Info.Searchable) == "boolean" then Info.Searchable else false
         Info.FormatDisplayValue = if typeof(Info.FormatDisplayValue) == "function" then Info.FormatDisplayValue else nil
+        Info.FormatListValue = if typeof(Info.FormatListValue) == "function" then Info.FormatListValue else nil
 
         if (not Info.Text) then
             Info.Compact = true
@@ -4829,10 +4830,8 @@ do
 
             if Info.Multi then
                 for Idx, Value in next, Values do
-                    local StringValue = if typeof(Value) == "Instance" then Value.Name else Value
-
                     if Dropdown.Value[Value] then
-                        Str = Str .. (Info.FormatDisplayValue and tostring(Info.FormatDisplayValue(StringValue)) or StringValue) .. ", "
+                        Str = Str .. tostring(Info.FormatDisplayValue and Info.FormatDisplayValue(Value) or Value) .. ", "
                     end
                 end
 
@@ -4844,8 +4843,7 @@ do
                     return
                 end
 
-                local StringValue = if typeof(Dropdown.Value) == "Instance" then Dropdown.Value.Name else Dropdown.Value
-                ItemList.Text = Info.FormatDisplayValue and tostring(Info.FormatDisplayValue(StringValue)) or StringValue
+                ItemList.Text = tostring(Info.FormatDisplayValue and Info.FormatDisplayValue(Dropdown.Value) or Dropdown.Value)
             end
         end
 
@@ -4876,7 +4874,7 @@ do
 
             local Count = 0
             for Idx, Value in next, Values do
-                local StringValue = if typeof(Value) == "Instance" then Value.Name else Value
+                local StringValue = tostring(Info.FormatListValue and Info.FormatListValue(Value) or Value)
                 if Info.Searchable and not string.lower(StringValue):match(string.lower(DropdownInnerSearch.Text)) then
                     continue
                 end
@@ -6176,10 +6174,12 @@ do
     Library:MakeDraggable(KeybindOuter)
 end
 
---// Watermark \\--
+
+--// Watermark (modded and new style: Skeet) \\--
 do
     local WatermarkOuter = Library:Create("Frame", {
-        BorderColor3 = Color3.new(0, 0, 0);
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+        BorderSizePixel = 0;
         Position = UDim2.new(0, 100, 0, -25);
         Size = UDim2.new(0, 213, 0, 20);
         ZIndex = 200;
@@ -6189,51 +6189,40 @@ do
 
     local WatermarkInner = Library:Create("Frame", {
         BackgroundColor3 = Library.MainColor;
-        BorderColor3 = Library.AccentColor;
+        BorderColor3 = Color3.fromRGB(45, 45, 45);
         BorderMode = Enum.BorderMode.Inset;
-        Size = UDim2.new(1, 0, 1, 0);
+        Position = UDim2.new(0, 1, 0, 1);
+        Size = UDim2.new(1, -2, 1, -2);
         ZIndex = 201;
         Parent = WatermarkOuter;
     })
 
-    Library:AddToRegistry(WatermarkInner, {
-        BorderColor3 = "AccentColor";
-    })
-
-    local InnerFrame = Library:Create("Frame", {
-        BackgroundColor3 = Color3.new(1, 1, 1);
+    -- RGB Полоска
+    local SkeetLine = Library:Create("Frame", {
+        BackgroundColor3 = Library.AccentColor;
         BorderSizePixel = 0;
-        Position = UDim2.new(0, 1, 0, 1);
-        Size = UDim2.new(1, -2, 1, -2);
-        ZIndex = 202;
+        Position = UDim2.new(0, 0, 0, 0);
+        Size = UDim2.new(1, 0, 0, 2);
+        ZIndex = 204;
         Parent = WatermarkInner;
     })
 
-    local Gradient = Library:Create("UIGradient", {
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-            ColorSequenceKeypoint.new(1, Library.MainColor),
-        });
-        Rotation = -90;
-        Parent = InnerFrame;
-    })
-
-    Library:AddToRegistry(Gradient, {
-        Color = function()
-            return ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-                ColorSequenceKeypoint.new(1, Library.MainColor),
-            })
+    -- Цикл для RGB эффекта
+    task.spawn(function()
+        while task.wait() do
+            local Hue = tick() % 5 / 5 -- Скорость перелива (5 секунд на круг)
+            local Color = Color3.fromHSV(Hue, 1, 1)
+            SkeetLine.BackgroundColor3 = Color
         end
-    })
+    end)
 
     local WatermarkLabel = Library:CreateLabel({
-        Position = UDim2.new(0, 5, 0, 0);
-        Size = UDim2.new(1, -4, 1, 0);
+        Position = UDim2.new(0, 6, 0, 2);
+        Size = UDim2.new(1, -12, 1, -2);
         TextSize = 14;
         TextXAlignment = Enum.TextXAlignment.Left;
-        ZIndex = 203;
-        Parent = InnerFrame;
+        ZIndex = 205;
+        Parent = WatermarkInner;
     })
 
     Library.Watermark = WatermarkOuter
@@ -6246,12 +6235,12 @@ do
 
     function Library:SetWatermark(Text)
         local X, Y = Library:GetTextBounds(Text, Library.Font, 14)
-        Library.Watermark.Size = UDim2.new(0, X + 15, 0, (Y * 1.5) + 3)
-        Library:SetWatermarkVisibility(true)
-
+        Library.Watermark.Size = UDim2.new(0, X + 15, 0, 22) 
         Library.WatermarkText.Text = Text
     end
 end
+
+
 
 --// Notifications \\--
 do
@@ -7895,7 +7884,7 @@ end
     local Toggled = false
     local Fading = false
     
-    function Library:Toggle(Toggling)
+    function Window:Toggle(Toggling)
         if typeof(Toggling) == "boolean" and Toggling == Toggled then return end
         if Fading then return end
 
@@ -7926,8 +7915,9 @@ end
                     CursorOutline.Visible = Library.ShowCustomCursor
                     
                     local OldMouseIconState = InputService.MouseIconEnabled
-                    pcall(function() RunService:UnbindFromRenderStep("LinoriaCursor") end)
-                    RunService:BindToRenderStep("LinoriaCursor", Enum.RenderPriority.Camera.Value - 1, function()
+                    local ShowCursorBinding = Library.ShowCursorBinding
+                    pcall(function() RunService:UnbindFromRenderStep(ShowCursorBinding) end)
+                    RunService:BindToRenderStep(ShowCursorBinding, Enum.RenderPriority.Camera.Value - 1, function()
                         InputService.MouseIconEnabled = not Library.ShowCustomCursor
                         local mPos = InputService:GetMouseLocation()
                         local X, Y = mPos.X, mPos.Y
@@ -7945,7 +7935,7 @@ end
                             InputService.MouseIconEnabled = OldMouseIconState
                             if Cursor then Cursor:Destroy() end
                             if CursorOutline then CursorOutline:Destroy() end
-                            RunService:UnbindFromRenderStep("LinoriaCursor")
+                            RunService:UnbindFromRenderStep(ShowCursorBinding)
                         end
                     end)
                 end))
@@ -8007,6 +7997,10 @@ end
         task.wait(FadeTime)
         Outer.Visible = Toggled
         Fading = false
+    end
+
+    function Library:Toggle(Toggling)
+        return Window:Toggle(Toggling)
     end
 
     Library:GiveSignal(InputService.InputBegan:Connect(function(Input, Processed) -- :sob:
